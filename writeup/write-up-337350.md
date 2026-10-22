@@ -11,7 +11,7 @@
 - It scored 1.918e-9 on the official public networks, with 100/100 networks completed.
 - Its final-layer MSE is 84× below Monte Carlo spending the whole budget, at 14 % of that budget. At equal compute that is 590×.
 - Prizes follow a rescoring on new networks.
-- Code, checks and ablation receipts: https://github.com/Meganpark980320/arc-whitebox-p2-337350.
+- Code, checks, ablation receipts and tool reproductions: https://github.com/Meganpark980320/arc-whitebox-p2-337350.
 
 **What we contribute to ARC's question of why its methods break down with depth.**
 1. *How errors fade (§2).* How much of a layer's error reaches the output is fixed by the network: \(S(\ell)=\prod_{k>\ell}(1-\arccos(c_k)/\pi)\), the slope of the mean-field correlation map.
@@ -25,6 +25,11 @@
 3. *Derived corrections (§4).* Seven terms from ARC's expansion, folded into products the engine already computes.
    - Feedback-birth is the largest: switching it off alone nearly quadruples the MSE, and its derived strength ½ beats its inherited ¼ by 17 %.
    - O1 (−0.87 %) and ACC (−0.52 %) were official single changes.
+
+**What it means, and what we found in the tools (§6, Appendix H).**
+- *Depth.* Depth hurts through slow forgetting: to keep the output error fixed from depth 16 to 64, each layer's new error must shrink about 3×. Shared scale and bias errors are the dangerous ones, and the missing piece is memory (κ4 converted from old κ3).
+- *Fits.* The fitted factor of about 1.8 is a measured target for theory. §6.4 lists five open problems.
+- *Tools and scoring.* Two flopscope bugs pass every in-process test and fail only in grading: a tuple `axis` in client–server mode, and einsum's cost analysis allocating a float64 buffer the size of each operand (with a verified patch). We also report two smaller tool issues and three observations on the scoring rules, each reproduced on the current releases with scripts in the repository.
 
 **Honest accounting (§§1.3, 5).** The score rests substantially on fitted parts.
 - *All switchable fits off.* This covers the learned corrections, the learned κ4 parts, the tuned strengths and gains, and the inherited fitted κ4 constant λ. Switching them all off raises the MSE by 78–82 % on two network sets.
@@ -458,17 +463,58 @@ These arms ran on other machines than their bases; on the 60 networks whose runs
 *Sources:* `docs/concepts/problem-setup.md`.
 
 
-# 6. Lessons for estimator design
+# 6. What this means
 
-**L1. Weight accuracy work by how much survives.** Layer-6 errors keep 0.21 of their energy at the output, layer-14 errors 0.87; scale and bias errors barely fade (§2). *High*, random networks.
+Each implication names its evidence, with the tags of §8.2.
 
-**L2. Spend representation on the carried state.** On tuning networks, covariance and κ3-leg truth oracles gain −29 % and −11 % MSE; a slot fix does not enter the state (§3). *Medium–high.*
+## 6.1 For ARC's question: why estimators break down with depth
 
-**L3. Treat κ4 as old state converted from κ3.** κ4→κ3 supply is three quarters to four fifths of each layer's new κ3 error; a generator well below O(n³) per source is missing (§3.6). *Medium*: one or two networks.
+1. **Depth hurts through slow forgetting.** An error made at layer ℓ keeps S(ℓ) of its energy at the output, and S falls only polynomially (§2.5).
+   - With equal error per layer, the output carries 3.8, 6.0, 10.3 and 18.6 layers' worth of error at depths 8, 16, 32 and 64.
+   - So, going from depth 16 to 64 at a fixed output error, each layer's new error must shrink about 3×. In our engine it grows with depth instead (§3.1). [derivation; 64 validation networks]
+2. **Shared errors are the dangerous ones.** An error along the mean, a shared scale or bias, keeps 0.96–0.99 of its energy per layer (§2.3). A mechanistic estimator for deep networks should get the mean direction exactly right first. [derivation; simulation]
+3. **What is missing is memory.** Three quarters to four fifths of each layer's new κ3 error comes from κ4 that is old state converted from κ3 (§3.6).
+   - A closure that maps this layer's means and covariance to the next one cannot supply it, however good it is.
+   - The estimator has to carry more state through depth, or a compressed history. [two networks, one step]
+4. **Derivation can replace fitting, but has not yet.** With every switchable fitted part off, the engine is still 330× better than Monte Carlo at equal compute; the shipped build is 594× (Table 5.2).
+   - Where we could test a derived strength against a fitted one, the derived one won: feedback-birth at ½ against ¼, by 17 %.
+   - The remaining factor of about 1.8 is structure that the fits capture and our derivations do not. It is a measured target for theory. [public networks, ablation]
 
-**L4. Fold derived corrections into existing products; report shipped strengths.** Feedback-birth (−9.93 % at ¼), O1 (−0.87 %) and ACC (−0.52 %) were official single changes; derived strengths cost 1.3 % MSE (Table 5.2). *High.*
+## 6.2 For people building estimators
 
-**L5. Do not cut compute by discarding directions.** A corrector recovered about 71 % of a magnitude loss, about 0 % of a direction loss (Appendix C). *Medium.*
+- **Weight accuracy work by survival.** A fix at layer 6 is worth 0.21 of its local size at the output, and one at layer 14 is worth 0.87 (§2.5). The law takes a few lines of code (`checks/depth-law/survival_law_v9.py` in the repository). [derivation]
+- **Fix the carried state, not the readout.** Truth oracles gain 29 % in the covariance and 11 % in the κ3 legs. A corrected value written into one layer's slot does not enter the state (§3). [tuning networks]
+- **Fold derived corrections into products you already compute, and report the strength you ship.** Feedback-birth's official −9.93 % was measured at strength ¼ (§4). [official single change]
+- **Do not save compute by discarding directions.** A corrector recovered about 71 % of a magnitude loss but about 0 % of a direction loss (Appendix C). [tuning networks]
+- **Keep a fresh network set for decisions.** Effects measured on fresh networks carried over to official results at 1.07×, and effects measured on networks reused for selection at 0.29× (Appendix G.2). [official bundle]
+- **Test in the grader's mode before trusting a local number.** Two of the tool issues below pass every in-process test and fail only under the grader's client–server mode or its memory limit (§6.3).
+
+## 6.3 For the benchmark and its tools
+
+We checked each item below on the current releases (flopscope 0.12.3, whestbench 0.16.2), both in-process and through flopscope's own client–server pair. The scripts are in the repository's `feedback/` folder, and the details are in Appendix H. None of T1–T4 appears among the 113 open and closed issues of flopscope's tracker as of 22 October.
+
+Each item gives its kind, what happens, and its effect on a participant.
+
+- **T1** (bug). `sum`, `mean` and `max` with a tuple `axis` raise `TypeError` in client–server mode only, because the client sends tuples as lists. *Effect:* Code that passes every local test fails in grading. Behind a fallback guard, it silently ships the fallback.
+- **T2** (bug; patch verified). `einsum` with three or more operands, or with a repeated operand, allocates a float64 buffer the size of each operand for its cost analysis (four sites). *Effect:* Twice the bytes of a float32 operand. Fails under the grader's 8 GiB limit where NumPy passes.
+- **T3** (NumPy difference). In client–server mode, an `out=` call returns a new wrapper, not `out` itself. *Effect:* Caches keyed on the returned object miss: about 1 % extra requests for us.
+- **T4** (documentation). The wheel ships `weights.csv`, whose "Active Weight" column differs from billing for 96 of 461 operations (`take` 0 against 4). *Effect:* Wrong cost estimates if the file is read as the price list.
+- **S1** (scoring design). A failed network scores zero predictions at multiplier 1.0, about 0.01 added to a 2e-9 score. In grading, one time-out also stopped the run. *Effect:* One failure loses the submission, so we built timing guards, which make some outputs timing-dependent.
+- **S2** (scoring design). The 5 s setup window includes process start and imports, with five workers starting at once, while `whest validate` times `setup()` alone. One overrun fails the whole submission. *Effect:* One setup took 2.8 s alone on our machine, 4.5 s on four grading workers and over 5 s on the fifth (#337287). Two of our ~17 submissions near the limit failed outright.
+- **S3** (scoring design). Compute counts one-for-one with accuracy. *Effect:* Half of our 62 % gain is compute engineering that says nothing about estimation.
+
+**Suggestions.**
+- *For S1:* cap a failed network's score, for instance at a fixed multiple of the submission's median, or score a trimmed mean. A guard would then be optional, and outputs could stay deterministic.
+- *For S2:* make `whest validate` time the same window as grading (spawn, imports and setup, ideally with five workers), and report each worker's setup margin in the evaluation record.
+- *For S3:* also rank accuracy at a fixed compute, so that mechanistic gains show apart from compute engineering.
+
+## 6.4 Open problems
+
+1. **A cheap κ4 memory.** A generator for each source's κ4 well below O(n³) would supply most of the κ3 error that is still missing (§3.6).
+2. **Error sizes from first principles.** §2 fixes how errors fade. A law for how large each layer's new error is would complete the budget.
+3. **Less compute without discarding directions.** A leading submission matches our final-layer MSE at 0.75× our compute (§7). Every cut we tried that dropped directions lost accuracy.
+4. **The fitted factor of 1.8.** Which structure do the learned corrections capture (§6.1, item 4)?
+5. **Beyond random Gaussian ReLU networks.** The survival law assumes independent Gaussian weights. Trained networks and other activations are untested.
 
 
 # 7. Limitations
@@ -481,6 +527,7 @@ These arms ran on other machines than their bases; on the 60 networks whose runs
 - **Time guards make some outputs timing-dependent** (§1.4). Officially one network shows a lever-sized compute rise, with no limit flag. #337451 lost 1.78 %, most likely (unconfirmed) through a sticky lateness rule.
 - **The prize score comes from a fresh run** on new networks; one time-limit failure voids a submission.
 - **The compute gap stayed open.** A leading submission (#337292) matches our final-layer MSE (×0.985) at ×0.75 our compute, 234 against 312 GF [official, another team's public record]; our direction-discarding cuts all lost accuracy.
+- **The tool feedback (§6.3, Appendix H)** was reproduced on one machine, with flopscope's client–server pair built from source rather than the hardened grading image. The einsum patch was tested on flopscope's own tests and six expressions, not inside a full submission. S1–S3 rest on our own submissions.
 - **Records are incomplete.** The learned parts' training-set manifest is missing, some fitted parts lack a recorded training set, and one §3 input array came from a scratch folder (its sha256 matches).
 
 *Sources:* `experiments/claude_ideas_20261014/` (leak-law pre-registration, one-step test); `experiments/claude_setupbox_20261020/post337451/`; `experiments/claude_explore_20261014/intel_E/data/evals/evaluation_337292.json`.
@@ -499,7 +546,7 @@ These arms ran on other machines than their bases; on the 60 networks whose runs
 
 **"We"** in this write-up means the participant together with the AI agents. Unless stated otherwise, the agents carried out the derivations, code and numerical checks; the ideas behind them came mostly from the participant.
 
-**This document.** AI agents drafted it from the participant's results and decisions; the participant read and approved it. Three of five AI reviewers, prompted to take ARC researchers' perspectives, proposed §2's error budget and closed forms; we re-derived and checked both.
+**This document.** AI agents drafted it from the participant's results and decisions; the participant read and approved it. Three of five AI reviewers, prompted to take ARC researchers' perspectives, proposed §2's error budget and closed forms; we re-derived and checked both. The agents found the tool issues of §6.3 during the competition and re-checked them on 22 October on the current releases; they also wrote the einsum patch and its checks.
 
 Most ideas came from the participant. That does not mean a person re-derived every formula or reread every line of code. The agents did those and checked them, and the tags of §8.2 say how each claim was checked. The participant takes final responsibility for this write-up, the submission and this disclosure.
 
@@ -854,7 +901,7 @@ python3 -I docs/writeup/calc/ledger_pairs_v1.py --chain 332675,333794,334806,335
 
 ## F.7 Data in Google Drive
 
-Data too large for the repository is in the Drive folder `arcwb-phase2-backup-20261021`, shared on request; `docs/writeup/evidence/drive_backup/DRIVE-BACKUP-MANIFEST-20261021.tsv` lists each uploaded archive with sha256, md5 and size. §3 and Appendix C receipts (Monte Carlo truth, oracle and one-step runs) are in `ext_arcwb_misc`, the γ-check features (§2) in `exp_claude_gpu_mc`, and the learned parts' labels and training data in `exp_claude_gpu_mc`, `exp_claude_liaison_local_20261017` and `ext_arcwb_misc`, without a manifest of network ids, seeds and commands. Drive's daily limit held back five archives (45.5 GB) on 21 October, among them the §3 ledger's chain states (`ext_arcwb_r9A`). A job uploads them from 06:00 UTC on 22 October and checks each md5; until the manifest lists an archive, it counts as scheduled.
+Data too large for the repository is in the Drive folder `arcwb-phase2-backup-20261021`, shared on request; `docs/writeup/evidence/drive_backup/DRIVE-BACKUP-MANIFEST-20261021.tsv` lists each uploaded archive with sha256, md5 and size. §3 and Appendix C receipts (Monte Carlo truth, oracle and one-step runs) are in `ext_arcwb_misc`, the γ-check features (§2) in `exp_claude_gpu_mc`, and the learned parts' labels and training data in `exp_claude_gpu_mc`, `exp_claude_liaison_local_20261017` and `ext_arcwb_misc`, without a manifest of network ids, seeds and commands. Drive's daily limit held back five archives on 21 October, among them the §3 ledger's chain states (`ext_arcwb_r9A`); they were uploaded on 22 October, each md5 matched, and the manifest lists all of them.
 
 
 # Appendix G. Diagnostics behind the claims
@@ -891,3 +938,68 @@ Table 3.3. One engine step with true inputs (§3.5; 64 random rows × all column
 **Consistency check, not a fit (§3.4).** Let the standing error (% of ‖T‖²) follow e_{ℓ+1} = r·e_ℓ + s_ℓ, with r ≈ 0.8, the transport share (76–86 %) if the error is carried like the cumulant. The growth curve implies s_ℓ = 0.37–0.53 % at layers 10–14. The test measures s = 0.33–0.50 %, whose plateau s/(1−r) = 1.65–2.50 % is a relative error of 0.13–0.16, around the 0.140 at layer 14 [derivation].
 
 *Sources:* `experiments/claude_ideas_20261014/onestep/README.md` §§1–4; `docs/writeup/v9/calc/depth_error_checks_v1.py` parts B–C.
+
+
+# Appendix H. Tool and scoring feedback: reproductions
+
+**Setup.**
+- *Releases:* flopscope 0.12.3 from PyPI (in-process), and flopscope-client and flopscope-server 0.12.3 built from the v0.12.3 tag. Also whestbench 0.16.2, NumPy 2.2.6 and Python 3.10, on one Linux machine.
+- *Client–server mode:* through a Unix socket, as in flopscope's docker setup but without the hardened image.
+- *Scripts:* each script in `feedback/` prints its own result, and `feedback/run_all.sh` runs them in both modes. Line numbers refer to 0.12.3.
+
+## H.1 (T1) A tuple `axis` fails in client–server mode
+
+- **Repro.** `fnp.sum(fnp.ones((2, 3, 4)), axis=(0, 1))` returns shape (4,) in-process. In client–server mode it raises `TypeError: 'list' object cannot be interpreted as an integer`. `mean` and `max` behave the same, and an integer axis works.
+- **Cause.** The client's `_encode_arg` sends tuples as lists (`flopscope-client/src/flopscope/_remote_array.py:1553`, "msgpack can't distinguish tuple/list"). The server decodes with `msgpack.unpackb` defaults, which give lists, and NumPy rejects a list axis.
+- **Suggested fix.** Turn a list `axis` back into a tuple on the server, or decode with `use_list=False` [not tested].
+- **Our case.** A derived correction stored a diagonal with `sum(axis=(0, 1, 3))`. In client–server mode it raised in every predict, and our guard returned its fallback answer, about 2000× worse. In-process checks on 164 networks had passed. We caught it before submitting.
+
+## H.2 (T2) einsum's cost analysis allocates operand-sized float64 buffers
+
+- **Sites.** Each builds `np.empty(shape)` in float64 for every operand, only to read shapes and object identity:
+  - `_accumulation/_cost.py:532`, in `_walk_path_and_aggregate`, whose comment says "We use shapes=True to avoid materializing tensors";
+  - `_accumulation/_cost.py:46`;
+  - `_einsum.py:112`, in `_rebuild`;
+  - `_opt_einsum/_contract.py:1304`.
+- **Repro.** The operands are two float32 arrays of shape (8, 512, 512) and one of shape (8, 512).
+  - NumPy's `einsum("kij,kij,kj->i")` peaks at +0.1 MiB. Flopscope's first call peaks at +32.3 MiB, and its cached second call at +8.0 MiB, the computation's own intermediate. With the patch the first call peaks at +8.2 MiB.
+  - Under an address-space limit with 24 MiB of headroom, NumPy passes. Flopscope raises `MemoryError: Unable to allocate 16.0 MiB for an array with shape (8, 512, 512) and data type float64`.
+  - Two distinct operands allocate nothing, and later calls with the same expression and shapes hit a cache.
+- **In our runs.** Under the grader's 8 GiB limit, in our pre-submission check, it surfaced as `Unable to allocate 64.0 MiB … (8, 1024, 1024) float64`.
+- **Patch** (`feedback/einsum-dummies.patch`). Replace each `np.empty(shape)` with `np.broadcast_to(np.empty(()), shape)`, which has the right shape, is a distinct object and takes 8 bytes. We tested it on six expressions, including repeated and symmetry-tagged operands:
+  - FLOP counts and output bytes are identical.
+  - Peak memory falls from 8.3 to 2.2 MiB, and with a repeated operand from 12.1 to 2.1 MiB.
+  - flopscope's own test suite gives the same results with and without the patch (H.6).
+
+## H.3 (T3) `out=` returns a new object in client–server mode
+
+- **Repro.** For `r = fnp.add(a, a, out=c)`, `r is c` is True in-process and False in client–server mode. Both name the same server array: a later write through `c` shows in `r`.
+- **Effect.** Caches keyed on the returned object miss. Moving ours to the pool object saved 350–500 of about 47,700 requests per predict.
+
+## H.4 (T4) `weights.csv` in the wheel
+
+- **What ships.** The 0.12.3 wheel ships `flopscope/data/weights.csv` next to `default_weights.json`.
+- **The mismatch.** For 96 of the 461 operations that flopscope bills, its "Active Weight" column differs from the billed weight. Examples are `take`, `take_along_axis` and `choose` (0 against 4), `argsort` and `searchsorted` (1 against 4), and `hamming` (8 against 1).
+- **What the docs say.** The data folder's README calls the CSV historical evidence and says `default_weights.json` is the only weights file shipped in the wheel.
+- **Suggested fix.** Drop the CSV from the wheel, or rename the column.
+
+## H.5 (S1, S2) Failure and setup
+
+- **Failed networks** (whestbench 0.16.2 `scoring.py`).
+  - A failed network's predictions are zeroed, its multiplier is forced to 1.0, and the aggregate is the arithmetic mean. Zero predictions give a final-layer MSE of 0.7–1.2 on four public networks, so one failure adds about 0.01 to a score of 2e-9.
+  - In grading it was harsher still. #337298 completed 67 networks; then one network hit the time limit (predict 108 s), the other 32 were not scored, and the submission was marked failed and not ranked.
+- **Setup window** (whestbench 0.16.2 `runner.py`, `SubprocessRunner.start`).
+  - The 5.0 s timeout starts before the worker process is spawned, so it includes interpreter start and imports. A time-out raises `SETUP_TIMEOUT`, which fails the entire submission, as the CLI help says.
+  - `whest validate` times `estimator.setup()` alone, in-process.
+- **Setup in grading.** Five workers start on one machine.
+  - The setup of #337287 took 2.8 s alone on our machine. In grading it took 4.47–4.52 s on four workers, and the fifth went past 5 s. Across runs, workers' setups took 4.3–4.7 s, up to 0.7 s apart within one run.
+  - Of our ~17 submissions with a median setup of 4.3 s or more, two failed with only four workers' setups recorded (#336511, #337287).
+- **Compute** (S3). The official score is the final-layer MSE × max(0.1, F/B), which we checked on 50 official networks within 0.05 %. So a 1 % compute cut is worth exactly a 1 % accuracy gain.
+
+## H.6 Checking the patch
+
+flopscope's tests ran from the v0.12.3 tag, stock and patched, with the same NumPy and opt_einsum 3.4.0.
+- *einsum, contraction, accumulation and symmetry subset:* 1,008 passed, 1 failed and 2 skipped in both. The one failure, `test_two_operand_einsum_reaches_blas_speed`, is a timing test.
+- *Full suite, serial (10,829 tests):* no test fails only with the patch. About 2,400 tests fail in both runs in our setup, for example with `Cannot nest BudgetContexts`; we did not investigate them. That timing test failed only in the stock run. [reproduced]
+
+*Sources:* `feedback/` (scripts, patch, outputs); `experiments/claude_liaison_local_20261017/official_eval/eval_337298_fp3_failed_net66_timeout.json`, `eval_337287_V4R_failed.json`.

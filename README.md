@@ -13,6 +13,7 @@ Code release for the write-up *How errors survive depth in cumulant propagation*
 | [`docs/`](docs/) | `INVENTORY.md`: every constant and fitted part that changes the output, with its line in `estimator.py`. `READING-GUIDE.md`: code map, time guards and cost engineering. |
 | [`checks/`](checks/) | Scripts behind the write-up's checks. `depth-law/`: §2, survival law, closed forms, simulations, Figure 2. `depth-error/`: §3. `supply-terms/`: §4 and Appendix B. |
 | [`ablation/`](ablation/) | §5's ablation. `kit/`: the runner, driver, setup, analyses, arm settings, specification and run notes. `results/`: the per-network receipts of both rounds and the tables. |
+| [`feedback/`](feedback/) | §6.3 and Appendix H: scripts that reproduce four flopscope issues (a tuple `axis` in client–server mode, einsum's operand-sized float64 buffers, `out=` identity, `weights.csv`), a verified patch for the einsum one, and our outputs. |
 | [`licenses/`](licenses/) | Licences and notices of the prior work the estimator builds on (see below). |
 | `LICENSE` | MIT. Copyright holders: AIcrowd (starter kit) and meganpark (this work). |
 | `SHA256SUMS` | Checksums of every file. |

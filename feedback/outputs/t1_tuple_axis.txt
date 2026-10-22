@@ -1,0 +1,14 @@
+## in-process
+sum(axis=(0, 1)): ok, shape (4,)
+sum(axis=0): ok, shape (3, 4)
+mean(axis=(0, 1)): ok, shape (4,)
+mean(axis=0): ok, shape (3, 4)
+max(axis=(0, 1)): ok, shape (4,)
+max(axis=0): ok, shape (3, 4)
+## client-server
+sum(axis=(0, 1)): TypeError: 'list' object cannot be interpreted as an integer
+sum(axis=0): ok, shape (3, 4)
+mean(axis=(0, 1)): TypeError: 'list' object cannot be interpreted as an integer
+mean(axis=0): ok, shape (3, 4)
+max(axis=(0, 1)): TypeError: 'list' object cannot be interpreted as an integer
+max(axis=0): ok, shape (3, 4)

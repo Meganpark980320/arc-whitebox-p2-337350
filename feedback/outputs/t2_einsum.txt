@@ -1,0 +1,29 @@
+## stock
+flopscope 0.12.3+np2.2.6 at <server-venv>/site-packages/flopscope/__init__.py
+operands: 2 x 8 MiB + 0.02 MiB (float32)
+numpy.einsum('kij,kij,kj->i')                  peak +    0.1 MiB
+flopscope einsum('kij,kij,kj->i'), 1st call    peak +   32.3 MiB
+flopscope einsum('kij,kij,kj->i'), 2nd call    peak +    8.0 MiB
+flopscope einsum('kij,kij->i')  (2 operands)   peak +    0.0 MiB
+numpy : ok
+flopscope : MemoryError Unable to allocate 16.0 MiB for an array with shape (8, 512, 512) and data type float64
+stock    | kij,kij,kj->i (A,B,c)                | flops    1,572,608 | out 97c23b24f8 | peak   8.3 MiB
+stock    | kij,kij,kj->i (A,A,c) repeated       | flops    1,572,608 | out a9f9f7bccc | peak  12.1 MiB
+stock    | ij,jk,kl->il chain                   | flops      324,608 | out 3401b11d9d | peak   0.1 MiB
+stock    | ik,kl,jl->ij sandwich (X,M,X)        | flops    3,121,152 | out ef33159486 | peak   0.3 MiB
+stock    | ik,kl,jl->ij sandwich (X,S,X) sym    | flops    3,121,152 | out 4f4babcc35 | peak   0.1 MiB
+stock    | ab,bc,cd,de->ae 4 ops                | flops      547,500 | out a4fb198057 | peak   0.2 MiB
+## patched (<patched-copy>)
+flopscope 0.12.3+np2.2.6 at <patched-copy>/flopscope/__init__.py
+operands: 2 x 8 MiB + 0.02 MiB (float32)
+numpy.einsum('kij,kij,kj->i')                  peak +    0.1 MiB
+flopscope einsum('kij,kij,kj->i'), 1st call    peak +    8.2 MiB
+flopscope einsum('kij,kij,kj->i'), 2nd call    peak +    8.0 MiB
+flopscope einsum('kij,kij->i')  (2 operands)   peak +    0.0 MiB
+flopscope : ok
+patched  | kij,kij,kj->i (A,B,c)                | flops    1,572,608 | out 97c23b24f8 | peak   2.2 MiB
+patched  | kij,kij,kj->i (A,A,c) repeated       | flops    1,572,608 | out a9f9f7bccc | peak   2.1 MiB
+patched  | ij,jk,kl->il chain                   | flops      324,608 | out 3401b11d9d | peak   0.1 MiB
+patched  | ik,kl,jl->ij sandwich (X,M,X)        | flops    3,121,152 | out ef33159486 | peak   0.2 MiB
+patched  | ik,kl,jl->ij sandwich (X,S,X) sym    | flops    3,121,152 | out 4f4babcc35 | peak   0.1 MiB
+patched  | ab,bc,cd,de->ae 4 ops                | flops      547,500 | out a4fb198057 | peak   0.1 MiB

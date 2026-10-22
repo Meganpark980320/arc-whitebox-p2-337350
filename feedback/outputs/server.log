@@ -1,0 +1,3 @@
+[flopscope-server] binding to ipc://<socket>  (timeout=60.0s)
+<python3.10>/lib/python3.10/runpy.py:86: SymmetryLossWarning: Symmetry lost along dims (0, 1): sum removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  exec(code, run_globals)

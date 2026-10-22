@@ -1,0 +1,48 @@
+diff --git a/src/flopscope/_accumulation/_cost.py b/src/flopscope/_accumulation/_cost.py
+index 5ba6baa..fe710e7 100644
+--- a/src/flopscope/_accumulation/_cost.py
++++ b/src/flopscope/_accumulation/_cost.py
+@@ -43,7 +43,7 @@ def _build_symmetric_proxy(shape, sym):
+     """
+     import numpy as np
+ 
+-    arr = np.empty(shape)
++    arr = np.broadcast_to(np.empty(()), tuple(shape))
+     if sym is None:
+         return arr
+     from flopscope._symmetry_utils import wrap_with_trusted_symmetry
+@@ -529,7 +529,7 @@ def _walk_path_and_aggregate(
+     # We use shapes=True to avoid materializing tensors.
+     import numpy as _np
+ 
+-    dummy_operands = [_np.empty(shape) for shape in shapes]
++    dummy_operands = [_np.broadcast_to(_np.empty(()), tuple(shape)) for shape in shapes]
+     upstream_path, upstream_info = _oe.contract_path(
+         canonical_subscripts,
+         *dummy_operands,
+diff --git a/src/flopscope/_einsum.py b/src/flopscope/_einsum.py
+index 58d0dce..ce9ee6c 100644
+--- a/src/flopscope/_einsum.py
++++ b/src/flopscope/_einsum.py
+@@ -109,7 +109,7 @@ def _make_rebuild_cache(maxsize):
+         # listed in the same identity-group to share object identity — this
+         # is the signal the oracle uses to fire Source-B (identical-operand
+         # swap) and Source-C (coordinated axis relabel) generators.
+-        dummy_ops: list = [_np.empty(sh) for sh in shapes]
++        dummy_ops: list = [_np.broadcast_to(_np.empty(()), tuple(sh)) for sh in shapes]
+         if identity_pattern is not None:
+             for group in identity_pattern:
+                 canonical = dummy_ops[group[0]]
+diff --git a/src/flopscope/_opt_einsum/_contract.py b/src/flopscope/_opt_einsum/_contract.py
+index 94a66fd..e9d0497 100644
+--- a/src/flopscope/_opt_einsum/_contract.py
++++ b/src/flopscope/_opt_einsum/_contract.py
+@@ -1301,7 +1301,7 @@ def build_path_info(
+                     # identical operands (e.g. A @ A → S₂ on output) would
+                     # silently be omitted from the per-step annotation.
+                     _dummy_ops: list = [
+-                        _np.empty(tuple(size_dict[c] for c in part))
++                        _np.broadcast_to(_np.empty(()), tuple(size_dict[c] for c in part))
+                         for part in _orig_parts_list
+                     ]
+                     if identity_pattern is not None:

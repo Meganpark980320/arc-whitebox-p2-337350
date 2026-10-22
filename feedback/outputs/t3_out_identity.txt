@@ -1,0 +1,8 @@
+## in-process
+<feedback>/t3_out_identity.py:11: SymmetryLossWarning: Symmetry lost along dims (0, 1): sum removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  print("a later write through c shows in r:", float(fnp.sum(r)) == 0.0)
+add(a, a, out=c) is c: True
+a later write through c shows in r: True
+## client-server
+add(a, a, out=c) is c: False
+a later write through c shows in r: True

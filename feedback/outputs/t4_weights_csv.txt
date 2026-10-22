@@ -1,0 +1,26 @@
+flopscope 0.12.3+np2.2.6: weights.csv rows 512, in billing 461, 'Active Weight' differs from billing for 96
+  hamming                      csv     8   billed     1
+  hanning                      csv     8   billed     1
+  choose                       csv     0   billed     4
+  take                         csv     0   billed     4
+  take_along_axis              csv     0   billed     4
+  apply_along_axis             csv     4   billed     1
+  argpartition                 csv     1   billed     4
+  argsort                      csv     1   billed     4
+  bincount                     csv     1   billed     4
+  digitize                     csv     1   billed     4
+  histogram                    csv     1   billed     4
+  histogram2d                  csv     1   billed     4
+  histogram_bin_edges          csv     1   billed     4
+  histogramdd                  csv     1   billed     4
+  intersect1d                  csv     1   billed     4
+  lexsort                      csv     1   billed     4
+  partition                    csv     1   billed     4
+  piecewise                    csv     4   billed     1
+  random.Generator.permuted    csv     1   billed     4
+  random.choice                csv     1   billed     4
+  random.permutation           csv     1   billed     4
+  random.sample                csv     4   billed     1
+  random.shuffle               csv     1   billed     4
+  searchsorted                 csv     1   billed     4
+  setdiff1d                    csv     1   billed     4
