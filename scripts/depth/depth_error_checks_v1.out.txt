@@ -1,0 +1,43 @@
+== A. ledger (64 validation networks, %% of last-layer error energy); channels: variance | k3+closure+heads | k4 after corrector
+  L6-9     7.30   4.83   2.20  row  14.33
+  L10-12  15.38   9.48   3.74  row  28.60
+  L13-14  17.44  10.58   3.94  row  31.96
+  L15     11.35   6.53   4.22  row  22.10
+  L0-5 (unsplit) 3.01; column totals [51.47, 31.418, 14.101]
+  variance share / survival (new variance error per layer, as %% of last-layer error once undone by fading):
+   L6 4.3 L7 5.8 L8 5.9 L9 7.8 L10 8.8 L11 9.4 L12 9.0 L13 10.2 L14 11.0 L15 11.3
+  per-layer survival ratio S(l)/S(l+1): L6 0.785 L7 0.807 L8 0.836 L9 0.804 L10 0.849 L11 0.866 L12 0.852 L13 0.866 L14 0.882
+
+== B. one-step true-input test (energies in % of |T|^2; n = noise energy of the same quantity, half-split)
+  net layer | R new  (n)   | R after true X (n) | X share raw / noise-corr | X (n share) | T noise | npz diff | transport | birth | cos(birth,211) | cos(R,X)
+  544 L10 | 0.448 (0.104) | 0.115 (0.031) | 0.744 / 0.756 | 0.484 (17%) | 0.614 | 0.699 | 0.763 | 0.213 | 0.989 | 0.878
+  544 L11 | 0.389 (0.071) | 0.083 (0.022) | 0.786 / 0.809 | 0.413 (13%) | 0.520 | 0.592 | 0.837 | 0.168 | 0.988 | 0.897
+  544 L12 | 0.417 (0.059) | 0.089 (0.017) | 0.787 / 0.800 | 0.519 (9%) | 0.457 | 0.477 | 0.828 | 0.159 | 0.985 | 0.911
+  544 L13 | 0.328 (0.045) | 0.076 (0.013) | 0.769 / 0.777 | 0.394 (9%) | 0.350 | 0.383 | 0.828 | 0.140 | 0.987 | 0.899
+  544 L14 | 0.380 (0.043) | 0.082 (0.012) | 0.784 / 0.792 | 0.457 (8%) | 0.354 | 0.380 | 0.861 | 0.147 | 0.985 | 0.906
+  624 L10 | 0.468 (0.115) | 0.100 (0.035) | 0.786 / 0.816 | 0.498 (18%) | 0.682 | 0.733 | 0.798 | 0.201 | 0.988 | 0.897 | with F68 form in base: R 0.402, share of it removed by X 0.751
+  624 L12 | 0.463 (0.076) | 0.086 (0.023) | 0.813 / 0.835 | 0.505 (12%) | 0.490 | 0.545 | 0.805 | 0.176 | 0.986 | 0.912 | with F68 form in base: R 0.387, share of it removed by X 0.777
+  624 L14 | 0.499 (0.050) | 0.086 (0.014) | 0.827 / 0.840 | 0.596 (7%) | 0.375 | 0.403 | 0.823 | 0.168 | 0.984 | 0.925 | with F68 form in base: R 0.382, share of it removed by X 0.774
+  pooled 544: share 1 - sum(R after X) / sum(R) = 0.774 ; noise-corrected 0.787
+  pooled 624: share 1 - sum(R after X) / sum(R) = 0.809 ; noise-corrected 0.831
+  per-layer ranges: R new 0.33-0.50 %, after X 0.08-0.11 %, share raw 0.74-0.83, noise-corrected 0.76-0.84, residual noise share 10-24 % of R
+  mean new error R, network 544: 0.392 % (standing chain error quoted for 544 in onestep README section 2: 1.36-1.70 %, mean 1.56 %)
+  retention 1 - new/standing = 1 - 0.392/1.56 = 0.75 ; allowing growth g = 1.09 of the standing error: g - new/standing = 0.84
+
+== C. growth curve, relative three-index error sqrt(sum e_Et / sum |K*-P*|^2), 14 networks [544, 545, 546, 547, 548, 549, 550, 551, 624, 625, 626, 627, 628, 629]
+  L6 0.0984 L7 0.0997 L8 0.1046 L9 0.1096 L10 0.1153 L11 0.1220 L12 0.1310 L13 0.1373 L14 0.1396
+  energy e_l (%% of |T|^2): L6 0.968 L7 0.995 L8 1.095 L9 1.200 L10 1.328 L11 1.488 L12 1.716 L13 1.886 L14 1.949
+  per-step energy growth: L6->7 x1.028 L7->8 x1.101 L8->9 x1.096 L9->10 x1.106 L10->11 x1.120 L11->12 x1.153 L12->13 x1.099 L13->14 x1.034
+  mean growth L6->L14: x1.0915 per layer
+  implied source s_l = e_l - 0.8 e_(l-1): L10 0.368 L11 0.425 L12 0.526 L13 0.513 L14 0.441  (%% of |T|^2)
+  plateau s/(1-r) for s = 0.33 / 0.50 (one-step range): 1.65 / 2.50 % -> relative error 0.128 / 0.158
+
+== D. MC noise of the 2^24 truth (noise_K21^2 |K*|^2) as a share of the measured three-index error energy e_Et, oracle base arm, 16 networks
+  L10 noise/err 0.083 (rel noise 0.0150) L11 noise/err 0.063 (rel noise 0.0136) L12 noise/err 0.048 (rel noise 0.0125) L13 noise/err 0.040 (rel noise 0.0115) L14 noise/err 0.034 (rel noise 0.0108)
+
+== E. GH counterfactual, network 624, slot layer 12: k, beta, rho
+  k=1 beta 0.039 rho 0.073 | k=2 beta 0.105 rho 0.149 | k=4 beta 0.298 rho 0.325
+== E. per-layer split of X*, network 624 (input layer p -> slot p+1)
+  slot L10: carried beta 0.844 rho 0.653 | new beta 0.370 rho 0.286 | beta sum 1.214 | cos(carried,new) 0.069 | birth share of new 0.149 (cos 0.369)
+  slot L12: carried beta 0.838 rho 0.729 | new beta 0.294 rho 0.259 | beta sum 1.132 | cos(carried,new) 0.010 | birth share of new 0.153 (cos 0.360)
+  slot L14: carried beta 0.806 rho 0.706 | new beta 0.267 rho 0.210 | beta sum 1.073 | cos(carried,new) 0.108 | birth share of new 0.137 (cos 0.329)

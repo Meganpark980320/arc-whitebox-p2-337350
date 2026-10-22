@@ -1,0 +1,2 @@
+layer 8: measured / closed form at the net's own c (mean over 6 nets): relu_mean 0.991 chi 1.001 curv 0.983 k4inj 0.860 gamma 0.999
+layer 15: measured / closed form at the net's own c (mean over 6 nets): relu_mean 0.948 chi 0.989 curv 0.963 k4inj 0.597 gamma 0.988

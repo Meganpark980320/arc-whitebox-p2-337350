@@ -1,0 +1,127 @@
+
+======== A. shipped strengths in the linked estimator ========
+estimator experiments/claude_merge_20261014/package_c2eko10S2H8D3ahF10CR3GsHV4RxDnoT78cf4g065/package/estimator.py sha256 dd17f7f47195ae40
+  O1 strength tau (derived 1)                          line 17440: _CF_O1P_TAU = float(_os.environ.get("CI_O1P_TAU", "1.5"))
+  O1 coefficient -tau*6/(n+4)/3                        line 17464: c = -_CF_O1P_TAU * 6.0 / (n + 4.0) / 3.0
+  O1 vector e = W_all[:,i12] - 2 m w1                  line 17469: fnp.add(e0, W_all[:, core._i12], out=e0)                 # e = W_all[:, i12] - 2 pk1 w1 (the birth's e_b)
+  ACC carry factor g (derived 1)                       line 17753: _CF_O1A = float(_os.environ.get("CI_O1P_ACC", "1"))
+  ACC gamma = g 2/(n+4) sum(w1 - m d)                  line 17768: gam = fnp.multiply(fnp.sum(t), _CF_O1A * 2.0 / (n + 4.0))            # v5: gamma_l = g 2/(n+4) sum(q - m d)
+  K31F tau31 (derived 1)                               line 17193: _CI_K31F_TAU = float(_os.environ.get("CI_K31F_TAU", "1.1"))
+  K31F layers                                          line 17194: _CI_K31F_LI = frozenset(int(x) for x in _os.environ.get("CI_K31F_LI", "3,4,5,6,7,8,9,10,11,12,13,14").split(",") if x.st
+  K31F U_A weights                                     line 17200: _CI_K31F_WA = fnp.asarray([1.0, 0.75, 0.5, 0.25], dtype=fnp.float32).reshape(4, 1, 1, 1)   # U_A weights of Om0..Om3
+  K31F U_P weights                                     line 17201: _CI_K31F_WB = fnp.asarray([0.25, 0.5, 0.75, 1.0], dtype=fnp.float32).reshape(4, 1, 1, 1)   # U_P weights of Om1..Om4
+  K31F column factor -tau g_s/3 (g_s = star gain)      line 17217: c = float(-tau * _CI_G['star'][li] / 3.0)
+  C2E tau_birth (derived 1)                            line 17335: _CI_C2E_TAU = float(_os.environ.get("CI_C2E_TAU", "0.65"))
+  C2E column 1/2 tau r31                               line 17365: v = (fnp.multiply(r31, 0.5 * _CI_C2E_TAU) if r31 is not None   # Claude-F RPCB R2: r31 = -mu / var from the caller
+  feedback-birth strength 0.35 g_fbb (derived 1/2)     line  7264: fnp.multiply(T1, 0.35 * _CI_G['fbb'][li], out=T1)
+  feedback-birth M-leg compensation                    line  7481: S_sep = fnp.multiply((e_b)[:, None], a_b.T, out=NN("ssep"))
+  gk v3 gate on/off                                    line 20080: _GK_GATE = _os.environ.get("ARC_GK_GATE", "1") == "1"
+  gk v3 coefficient 1/144                              line 20091: gate = gate + ((d3 * k4) * (1.0 / 144.0)) * w8
+  gk v3 replaces w1 before the O1 store                line  7216: w1 = _gk_transport_gate(w1, W_all, D3, _law_g4, a2, phi, i3, i4)
+  tmd-lite mode (2 = mean pinned at 2)                 line 19339: _C_TMD_MODE = _os.environ.get("CI_TMD_LITE", "2")   # Claude-R tmd-lite v2 (LV502)
+  tmd-lite metric d = w * 2/mean(w)                    line  6972: _c_tmd_d = (_cf_wwrs if _C_TMD_MODE == '1' else _cf_wwrs * (METRIC_C / fnp.mean(_cf_wwrs)))
+  row norms sum(W*W, axis=1), W = w32.T                line  6968: _cf_wwrs = fnp.sum(WW, axis=1)   # Claude-F TRWW: same op as before, kept for TRACE
+  mean metric constant                                 line  1773: METRIC_C = 2.0
+  per-layer gain table                                 line  1892: _CI_G = {'fbb': _hxl_n('000000000000f03f29eb3713d305f13f29eb3713d305f13f29eb3713d305f13f29eb3713d305f13f29eb3713d305f13f
+  CI_GK multipliers on the gain table                  line  1893: _ci_gk_env = _os.environ.get("CI_GK", "fbb:1-7:1.0282,fbb:8-15:1.0319,q3:1-7:1.0252,lam:8-15:0.9646,c2:1-7:1.0349").stri
+  k31 gains (old K31 slot, not K31F)                   line  7066: _t = tuple(_x * _CI_G['k31'][li] for _x in K31_THETA)
+  mean terms of the Wick table                         line  1663: TERM_SPECS = {(1,): [('ones1', 'ones1', 0, None, 1.0),
+  CI_GK default: fbb:1-7:1.0282,fbb:8-15:1.0319,q3:1-7:1.0252,lam:8-15:0.9646,c2:1-7:1.0349
+  feedback-birth strength s_l = 0.35*g_fbb[l] (after CI_GK), l = 0..15:
+    0.3500 0.3829 0.3829 0.3829 0.3829 0.3829 0.3934 0.3934 0.3948 0.3948 0.3948 0.4119 0.4119 0.4119 0.4119 0.3612
+  s_l / (derived 1/2), layers 1..14: 0.766 .. 0.824
+  s_l / (identity value 1/4), layers 1..14: 1.531 .. 1.647
+  star gains g_s (used by K31F), l = 0..15: 1.0000 1.0000 1.0000 0.9638 0.9638 0.9638 0.9674 0.9674 0.9674 0.9674 0.9674 0.9060 0.9060 0.9060 0.9060 0.9060
+  K31F effective tau31*g_s at l = 3..14: 1.060 1.060 1.060 1.064 1.064 1.064 1.064 1.064 0.997 0.997 0.997 0.997
+  k31 gains (old seven-term K31 slot), l = 0..15: 1.0000 1.0000 1.0000 1.0000 1.0000 1.0000 1.1435 1.1435 1.1435 1.1435 1.1435 1.2137 1.2137 1.2137 1.2137 1.0000
+
+======== B. physical coefficients, exact first-order quadrature (softplus, beta = 2) ========
+  T1b: coefficient of kappa3_aab * C_ac   = -0.00672449;  (1/2) t_a q_b q_c = -0.00672455  ratio 0.999991
+  T1c: coefficient of kappa3_aab * C_bc   = 0.02907752;  (1/2) d_a d_b q_c = 0.02907752  ratio 1.000000
+  control: coefficient of kappa3_aab * C_ab = 3.32e-16 (no connected diagram reaches c: expected 0)
+  birth: coefficient of C_ab C_bc        = 0.119133;  q_a d_b q_c = 0.119131  ratio 1.0000
+  C2edge: coefficient of C_ab^2 C_bc     = 0.004007;  (1/2) d_a t_b q_c = 0.004006  ratio 1.0001  (finite differences, step 0.03)
+  gk dressing: coefficient of kappa3_aaa * C_ab in Cov = -0.01111672;  (1/6) W4_a q_b = -0.01111737  ratio 0.999941
+  self-inheritance: coefficient of kappa4_aakl in kappa4(f_a,f_a,f_k,f_l) = 0.10591357;  (E f'^2 + E f f'' - m d)_a q_k q_l = 0.10591355  ratio 1.000000
+    ReLU alpha=-1.0: q - m d = 0.138495;  Phi - phi^2 - alpha Phi phi = 0.138495;  e = 2m(1-q) = 0.182252
+    ReLU alpha=+0.0: q - m d = 0.340845;  Phi - phi^2 - alpha Phi phi = 0.340845;  e = 2m(1-q) = 0.518625
+    ReLU alpha=+0.7: q - m d = 0.494844;  Phi - phi^2 - alpha Phi phi = 0.494844;  e = 2m(1-q) = 0.530260
+    ReLU alpha=+2.0: q - m d = 0.868810;  Phi - phi^2 - alpha Phi phi = 0.868810;  e = 2m(1-q) = 0.118803
+
+======== C. engine newborn-leg edits against ARC factor_k3.py:386-407 (n = 7, random inputs) ========
+  Gaussian birth Sym(3A, I, A d(w2)) vs physical path term: rel. max error 3.4e-16
+  feedback-birth edit with coefficient 0.25: rel. max error vs physical T1b+T1c 5.000e-01   (ratio of norms 0.5000)
+  feedback-birth edit with coefficient 0.5: rel. max error vs physical T1b+T1c 4.716e-16   (ratio of norms 1.0000)
+  inherited thin legs, linear part / physical T1b+T1c: ratio of norms 0.5000; rel. error vs 0.5*physical 3.1e-16
+  completing-square identity, max |difference| = 1.4e-17 (B = A + 1/4[d(w2) D + d(w1) D^T d(r)])
+  ARC light-light term vs engine Gaussian birth: rel. error 3.4e-16
+  ARC one-heavy-leg terms vs physical T1b+T1c: rel. error 3.1e-16
+  ARC doubled-light-edge terms vs physical C2edge: rel. error 1.0e-16
+  C2E edit with tau_birth = 0.5: |linear part| / |physical C2edge| = 0.5000, rel. error vs tau * physical 1.8e-15
+  C2E edit with tau_birth = 0.65: |linear part| / |physical C2edge| = 0.6500, rel. error vs tau * physical 1.5e-15
+  C2E edit with tau_birth = 1.0: |linear part| / |physical C2edge| = 1.0000, rel. error vs tau * physical 5.0e-16
+
+======== D. polarization rows of a quartic source (K31F) ========
+  K(x,x,x,y) slice vs U_A A^T + U_P P^T: max |diff| = 5.7e-14
+  diagonal K(e_i,e_i,e_i,e_i) vs F_i: max |diff| = 2.8e-14
+  weights of U_A on (A^3, A^2P, AP^2, P^3) = (1, 3/4, 1/2, 1/4) x (c40, c31, c22, c13); U_P = (1/4, 1/2, 3/4, 1) x (c31, c22, c13, c04)
+
+======== E. r = 1 trace normalisation and the mean-metric gate ========
+  metric 1 I: (6/(n+4)) sum_a T_aakl / G_kl on k != l = 1.000000 (expected 1)
+    T_aa01 for a not in (0,1) = omega/6 * G_01: True
+  metric 2 I: (6/(n+4)) sum_a T_aakl / G_kl on k != l = 2.000000 (expected 2)
+    T_aa01 for a not in (0,1) = omega/6 * G_01: True
+  inherited core vs (omega/(n+4)) sum_a r_a D_q G D_q: max |diff| = 8.3e-17
+  gamma at alpha = 0 (every r = 1/2 - 1/(2 pi)): 2n/(n+4) * (1/2 - 1/(2pi)) = 0.6790
+  O1 counterterm coefficient c_A = 6/(n+4) at n = 1024: 5.836576e-03
+
+======== F. power counting of the tabulated Edgeworth mean ========
+  term                     ARC cost   per-entry size   naive size (kappa_k ~ n^-(k-2)/2)   in table
+  W0                           0      n^-0             n^-0                             True
+  kappa3 W3/6                  2      n^-1             n^-0.5                           True
+  kappa4 W4/24                 2      n^-1             n^-1                             True
+  kappa3^2 W6/72               4      n^-2             n^-1                             True
+  kappa3 kappa4 W7/144         4      n^-2             n^-1.5                           True
+  kappa4^2 W8/1152             4      n^-2             n^-2                             False
+  kappa5 W5/120                4      n^-2             n^-1.5                           False
+  kappa6 W6/720                4      n^-2             n^-2                             False
+  kappa3^3 W9/1296             6      n^-3             n^-1.5                           False
+  kappa3 kappa5 W8/720         6      n^-3             n^-2                             False
+  ARC's mean at k_max = 3 keeps cost <= 2 (simple) or <= 3 (augmented): W0, kappa3, kappa4 terms only.
+  n=  256: rms sum_j W^3 = 4.393e-02; mean sum_j W^4 = 4.672e-02; mean sum_j |W|^3 = 2.819e-01
+  n=  512: rms sum_j W^3 = 2.150e-02; mean sum_j W^4 = 2.318e-02; mean sum_j |W|^3 = 1.978e-01
+  n= 1024: rms sum_j W^3 = 1.078e-02; mean sum_j W^4 = 1.166e-02; mean sum_j |W|^3 = 1.405e-01
+  n= 2048: rms sum_j W^3 = 5.552e-03; mean sum_j W^4 = 5.888e-03; mean sum_j |W|^3 = 1.002e-01
+  n= 4096: rms sum_j W^3 = 2.878e-03; mean sum_j W^4 = 2.937e-03; mean sum_j |W|^3 = 7.066e-02
+  log-log slope in n, sum W^3 (random sign)     : -0.982
+  log-log slope in n, sum W^4                   : -0.996
+  log-log slope in n, sum |W|^3 (coherent sign) : -0.497
+
+======== G. tmd-lite: squared row norms of a He-initialised layer ========
+  omega_a = sum_j W_aj^2: mean 2.0025 (E = 2), sd 0.0910 (sqrt(8/n) = 0.0884), range 1.718 .. 2.304
+  equals diag(W W^T): True; equals diag(w^T w): True
+  tmd-lite metric d = 2 omega / mean(omega): mean 2.0000, sd 0.0909
+
+======== H. cost of forming W X_F W^T densely ========
+  two n x n products per layer: 4.295 GF; over the 13 receiving layers 2..14: 55.8 GF
+  O1 official compute change +0.151 % of C = 0.1533 -> 0.51 GF per predict
+
+======== J. one source: kappa3_s = Sym(3A, P, A d(y)) + Sym(M, P, P); D21 slabs; O1 contraction and fold ========
+  D21 = L_A A^T + L_P P^T + (1/3)(P*P) L Z^T: max |diff| = 1.1e-14
+  D3 = 3 sum_j y_j A_ij^2 P_ij + sum_j M_ij P_ij^2: max |diff| = 3.6e-15
+  T_e = sum_i e_i kappa3_s[i,j,k] vs A D_cb A^T + A D_ca P^T + P D_ca A^T + P D_cd P^T + thin: max |diff| = 1.5e-14 (thin part norm share 0.33 on these random inputs)
+  fold: rho (W X_F W^T) vs dL_A A'^T + dL_P P'^T: max |diff| = 2.7e-15
+
+======== I. official paired changes (docs/writeup/calc/ledger_pairs_v1.py, saved evaluation JSONs) ========
+#334756 -> #334775  n 50  score -2.124% [-2.557, -1.697]  raw +2.948%  C 0.2166 -> 0.2059 (-4.93%)  wins 44/50
+#334775 -> #334780  n 50  score -9.931% [-10.752, -9.085]  raw -7.423%  C 0.2059 -> 0.2004 (-2.70%)  wins 50/50
+#334806 -> #334933  n 50  score -3.915% [-4.567, -3.253]  raw -2.043%  C 0.1834 -> 0.1799 (-1.91%)  wins 47/50
+#335702 -> #335956  n 50  score -5.680% [-6.503, -4.766]  raw -4.907%  C 0.1703 -> 0.1689 (-0.82%)  wins 47/50
+#336435 -> #336471  n 50  score -2.442% [-2.875, -2.021]  raw -2.703%  C 0.1532 -> 0.1536 (+0.26%)  wins 48/50
+#336471 -> #336603  n 50  score -1.959% [-2.431, -1.491]  raw -1.853%  C 0.1536 -> 0.1534 (-0.11%)  wins 45/50
+#336621 -> #336682  n 50  score -0.869% [-1.214, -0.516]  raw -1.012%  C 0.1533 -> 0.1536 (+0.15%)  wins 39/50
+#336682 -> #336706  n 50  score -0.519% [-0.854, -0.175]  raw -0.503%  C 0.1536 -> 0.1535 (-0.01%)  wins 34/50
+#336706 -> #336731  n 50  score -0.629% [-0.885, -0.370]  raw -0.395%  C 0.1535 -> 0.1532 (-0.23%)  wins 38/50
+#336836 -> #336885  n 50  score -0.109% [-0.418, +0.184]  raw -0.108%  C 0.1525 -> 0.1525 (+0.00%)  wins 23/50
+#337264 -> #337303  n 50  score -2.048% [-2.613, -1.477]  raw -0.271%  C 0.1452 -> 0.1427 (-1.77%)  wins 43/50
+#337303 -> #337350  n 50  score -0.637% [-0.883, -0.388]  raw -0.486%  C 0.1427 -> 0.1425 (-0.15%)  wins 38/50
