@@ -223,6 +223,20 @@ Table 2.2. Neuron averages for \(\alpha\sim\mathcal N(0,c/(1-c))\), and how well
   - The response is first order.
   - The generic law needs no mean component.
 
+## 2.6 An independent check, and related forum work
+
+*Noise injection in ARC's reference chain.* abhimanyu_singh (forum topic 18264) injected iid noise of size 10⁻³ into the D3 and D21 read-outs of a factored K = 3 chain at n = 256 and measured how much final-layer MSE it adds, by the layer where it was injected. Late layers were about 36 times more sensitive than layers 0–5. We repeated the experiment on ARC's reference implementation (`factored_nonlin_kprop_k3`, SIMPLE, n = 256, 16 layers, 8 networks, noise at one layer at a time). We split each layer's effect into the error made at that layer and the share of it that reaches layer 15.
+- *Mean channel (D3 noise).* The share reaching the output matches S(ℓ) at layers 7–14 within 6 % (measured/law 0.94–1.04, mean 1.03). The law was not refitted; the intervention, the engine and the width differ from §2.2. At layers 1–6 the measured share is 1.2–1.6 times S(ℓ), which we do not explain [simulation].
+- *Covariance channel (D21 noise).* A covariance error first moves the mean one layer later and keeps feeding it at every later layer. Its share at the output is up to 2.6 times the error it first makes in the mean, so one survival factor does not describe it. This is the mechanism behind §3: the remaining error is made in the carried state, not in the mean [simulation].
+- *The 36× profile.* We did not reproduce it. Our layer-window sensitivities are 1 / 11 / 42 / 83 / 113 for D3 alone and 1 / 8 / 19 / 19 / 8 for D3 and D21 together, against 1 / 9 / 24 / 30 / 36. That study adds noise per κ3 source of age ≥ 2, which ARC's single factored tensor does not have, so the mix of the two channels differs. The split above (local error × survival) applies to either.
+
+*Related forum work.*
+- abhimanyu_singh (18264) measured the layer profile and a bias/variance asymmetry: zero-mean read-out noise fades while truncation bias passes at gain ≈ 1. Our law gives the fading part in closed form.
+- Artyom_Mazur (18249, Proposition 1) shows that a neuron's error at the next layer is a random projection of this layer's error through an independent weight column. That is the premise of the derivation in §2.2.
+- il.miscusi (18248) and Artyom_Mazur (18249) remove a global scale mode inside their estimators (final-layer MSE ×0.380 in 18248). §2.3 predicts why this pays: an error along the scale direction does not fade.
+
+*Sources:* `docs/writeup/v9/calc/inject36_v1/` (`inject36_v1.py`, `an36_v1.py`, outputs for 8 networks).
+
 *Credit.* χ is standard (Schoenholz et al., 2017). AI agents reviewing an earlier version of this write-up proposed using it as an error budget, together with the closed forms in c; we re-derived and checked both (§8).
 
 *References.*

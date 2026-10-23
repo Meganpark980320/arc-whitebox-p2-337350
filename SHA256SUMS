@@ -1,5 +1,5 @@
 b0fed6923a6e558262c380619fdbc84f29d5e36bcdad3fa3b8b0906aae272468  ./LICENSE
-efb82e99b9ef16b58ecd9f7ca7623490cdd676742de09062acc4da5798c2689c  ./README.md
+63f5b11680e9ce41eb7b61cb89879ed9382bd377f2311585c32619266e2668c9  ./README.md
 2a005bf698a974497b4f7683e8f53696e373f263b817fa98ba81157b253ac115  ./ablation/kit/ABLATION-RUN-NOTES-v9.md
 e780e5df99b0ab84d5f6a99718ff884b4ab97c88844b7facbdf0c855ad4cf060  ./ablation/kit/ABLATION-SPEC-v9.md
 4df6ccc039529895a112ae3ce53046204294658c58d9081ed50181f7788f2e05  ./ablation/kit/abl_an_v1.py
@@ -2500,6 +2500,18 @@ f62a85ef79b65aec766e6442fb8ed88d3dad68602a17e737296340a300ad2e96  ./checks/depth
 0c98b950579cc5f01077c763e2bb4cd79415674ef84e0cbee54ef98b11dd8308  ./checks/depth-error/depth_error_checks_v1.py
 37b7f7ab111cd68894dd97e68a692aa320d95bb621d91335141b4dfffb75cbfb  ./checks/depth-law/budget_matrix_9A.json
 3b7b03e445f86f2c7504e499fd8fc23a806df5dca9e3c311de8f4b48ef602b86  ./checks/depth-law/fig2_survival_v9.py
+f0a9b1baa6f7a6cbb4dab43e20cb10fb67790414f32e9ea54e851d84b0ec0214  ./checks/depth-law/inject36/README.md
+db28a3b0a0d1d12a0ac27961e58e60f286372374a4d024e01059e33ea0e1f68f  ./checks/depth-law/inject36/an36_v1.out.txt
+960f78c4385cdafd42dcc865ca83331a8e3a9076103fb6692448ed76abe90326  ./checks/depth-law/inject36/an36_v1.py
+783917bbf9e9b467e6a05c15c209ac8de44ebe0bbcc1cc52f78166a4fe6fa319  ./checks/depth-law/inject36/inj36_net0.json
+ea2616d06489c967a5161cbccc9da0db4c64b05d683a31c960fbee500c05e9c9  ./checks/depth-law/inject36/inj36_net1.json
+50a1765c9c8c877861bd20305f3535b196f8cf3cd68a3713d310f500fb77d7f1  ./checks/depth-law/inject36/inj36_net2.json
+ed3b62edd1fea2aeef7979ef2f9fa0a5829a0391540e28629edec2c76af3def2  ./checks/depth-law/inject36/inj36_net3.json
+61ea795228511acd90951768cddce0a4f072e37ef5e09cf2056f3074e48443e1  ./checks/depth-law/inject36/inj36_net4.json
+15ad1e2f468e60d2856c6cdaab5b5faff61cf4a2406399c6d8c2d72f19f0072e  ./checks/depth-law/inject36/inj36_net5.json
+c00fcb722aea31b23a079026cdee19e092c95db35478c90e9b4387e1a476e6e9  ./checks/depth-law/inject36/inj36_net6.json
+d490e2475df40104eb9c0665ada424f070f695089d65a4ca4d57e8babba30828  ./checks/depth-law/inject36/inj36_net7.json
+48098bac08f090ff088bfd3bc2c2e986b6b2d319d885b4a96be4800edb85e29c  ./checks/depth-law/inject36/inject36_v1.py
 7242c092bc4711c91a39b78378edcfff02f86f8e148f0c0ddcc987f5f280986d  ./checks/depth-law/s2_sim_checks_v9.out.txt
 2bfbf1e1aa2036c1e259772baa114b6707b9546e66efa4cd3bba935176b504af  ./checks/depth-law/s2_sim_checks_v9.py
 027277cea09fbc078689961527bceb83c7f332999d971806a9a47f26fc8bd208  ./checks/depth-law/survival_law_v9.py
@@ -2536,5 +2548,5 @@ d2c9a83a86ed95c8d279219cd36d5a025c0372dee57d072fe4718850e226e740  ./licenses/LIC
 2f113d8770b92feb3b2a8a7c16956308094322d8aeb5d08f6a23390d67a8ea17  ./licenses/README-plinopt.md
 dd17f7f47195ae4063c3f7d91d273f2fb2bf31c0dac865eaadcfdf76acd45b41  ./submission/estimator.py
 b2c678bc2543e651e96d8019ea797dfbeeb807f49770829a4d4e84f7f119b890  ./submission/manifest.json
-93bd91cae2bd8e16d6f187e569a3a3e2a5d948ca07d16fb080727405c3ae74b6  ./writeup/write-up-337350.md
-24c9913c1de9a867515fdc11d6be085fbeef0d2fa16934abf7abda4b7cf60f3d  ./writeup/write-up-337350.pdf
+c6f2811046eeb971af82e490a71d40ad2e6d0484b45d5004f1fc79f8e2f2f878  ./writeup/write-up-337350.md
+fd9343494407e318ae6123cdab4e50e3f82b509f8043f89ef35e8ead48a8def3  ./writeup/write-up-337350.pdf
