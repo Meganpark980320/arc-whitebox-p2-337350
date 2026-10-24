@@ -8,3 +8,9 @@ python an36_v1.py inj36_net[0-7].json > an36_v1.out.txt
 ```
 
 Needs torch (CPU is enough; about 10 s per network with gradients off). `an36_v1.out.txt` is our output for networks 0–7.
+
+## Channel split and width scan (`channels/`, write-up §2.6)
+
+- `inject36_v2.py`: D3 noise only; splits each layer's local mean error into the incoming-mean direction and the rest and propagates both through the network's first-order mean map.
+- `inject36_v3.py`: three injections per layer (into the mean, into the variance, and into the D3 read-out), recording local mean and variance errors and the final error. `an36_v3.py` prints the two-channel prediction (`an36_v3.out.txt`).
+- `inject36_v4.py`: as v3 with a mode list; we ran `mean` at n = 128 and 512 for the width scan (`v4_n128_*`, `v4_n512_*`).
